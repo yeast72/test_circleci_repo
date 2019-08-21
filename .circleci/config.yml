@@ -25,7 +25,7 @@ jobs:
                 circleci orb publish ${ORB}/orb.yml namespace/${orbname}@version
 
               else
-
+                echo "${CIRCLE_COMPARE_URL}/${COMMIT_RANGE}"
                 echo "${orbname} not modified; no need to publish"
               fi
             done
