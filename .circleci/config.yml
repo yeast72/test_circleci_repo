@@ -27,7 +27,7 @@ jobs:
       - run:
           name: test app2
           command: |
-            cd express
+            cd app2
             yarn
             yarn test
       # # Download and cache dependencies
