@@ -28,6 +28,10 @@ jobs:
               fi
             done
           step-name: Publish modified orbs
+      - run: |
+        command: |
+          echo $CIRCLE_TOKEN
+
   build_app_1:
     docker:
       - image: circleci/node:10.16.2
@@ -57,9 +61,13 @@ workflows:
   publish-orbs:
     jobs:
       - publish
+
   build_and_test:
     jobs:
-      - build_app_1
+      - build_app_1:
+        filters:
+          branches:
+            only: master
       - build_app_2:
           filters:
             branches:
