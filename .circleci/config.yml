@@ -27,11 +27,11 @@ jobs:
           git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
           echo -e "Modified directories:\n`cat projects`\n"
           cat projects
-          while read project; do
-              if grep -Fxq $project projects.txt; then
-                printf "\nTriggerring build for dir: "$dir
-                curl -s -u ${CIRCLE_TOKEN}: \
-                  -d build_parameters[CIRCLE_JOB]=${project} \                https://circleci.com/api/v1.1/project/github/$O/$R/tree/$CIRCLE_BRANCH
+          # while read project; do
+          #     if grep -Fxq $project projects.txt; then
+          #       printf "\nTriggerring build for dir: "$dir
+          #       curl -s -u ${CIRCLE_TOKEN}: \
+          #         -d build_parameters[CIRCLE_JOB]=${project} \                https://circleci.com/api/v1.1/project/github/$O/$R/tree/$CIRCLE_BRANCH
 
   build_app_1:
     docker:
