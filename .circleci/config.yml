@@ -21,16 +21,15 @@ jobs:
               if [[ $(git diff $COMMIT_RANGE --name-status | grep "$orbname") ]]; then
 
                 echo "publishing ${orbname}"
-
+                echo "test ${CIRCLE_JOB}"
                 circleci orb publish ${ORB}/orb.yml namespace/${orbname}@version
+
               else
+
                 echo "${orbname} not modified; no need to publish"
               fi
             done
           step-name: Publish modified orbs
-      - run: |
-        command: |
-          echo $CIRCLE_TOKEN
 
   build_app_1:
     docker:
