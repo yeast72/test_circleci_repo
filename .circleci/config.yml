@@ -5,19 +5,33 @@
 version: 2.1
 
 jobs:
-  publish:
+  test:
     docker:
-      - image: circleci/circleci-cli
-
+      - image: circleci/node:10.16.2
     steps:
-      - checkout
-      - run:
-          echo "export STAGE=$(if [ $(git rev-parse --abbrev-ref HEAD) = 'master' ];
-          then echo prod; elif [ $(git rev-parse --abbrev-ref HEAD) = 'staging' ];
-          then
-          echo staging; else echo dev; fi);
-          " >> $BASH_ENV
-      - run: for dir in $(git log --name-only --oneline -1 | sed 1d | grep '/' | cut -d "/" -f1 | sed '/^\.circleci$/d' | sort -u); do cd $dir; yarn; yarn test; cd ..; done
+      - type: checkout
+      - type: shell
+        name: "Determine which Projects need to be built"
+        command: |
+          # Identify modified directories
+          LAST_SUCCESSFUL_BUILD_URL="https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?filter=completed&limit=1"
+          LAST_SUCCESSFUL_COMMIT=`curl -Ss -u "$CIRCLE_TOKEN:" $LAST_SUCCESSFUL_BUILD_URL | jq -r '.[0]["vcs_revision"]'`
+
+          #first commit in a branch
+          if [[ ${LAST_SUCCESSFUL_COMMIT} == "null" ]]; then
+            COMMITS="origin/master"
+          else
+            COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
+          fi
+
+          git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
+          echo -e "Modified directories:\n`cat projects`\n"
+          cat projects
+          while read project; do
+              if grep -Fxq $project projects.txt; then
+                printf "\nTriggerring build for dir: "$dir
+                curl -s -u ${CIRCLE_TOKEN}: \
+                  -d build_parameters[CIRCLE_JOB]=${project} \                https://circleci.com/api/v1.1/project/github/$O/$R/tree/$CIRCLE_BRANCH
 
   build_app_1:
     docker:
@@ -43,36 +57,8 @@ jobs:
             yarn test
 
 workflows:
-  version: 2.1
-  publish-orbs:
-    jobs:
-      - publish
-
+  version: 2
   build_and_test:
     jobs:
-      - build_app_1:
-        filters:
-          branches:
-            only: master
+      - build_app_1
       - build_app_2:
-          filters:
-            branches:
-              only: master
-      # # Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "package.json" }}
-      #       # fallback to using the latest cache if no exact match is found
-      #       - v1-dependencies-# Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "package.json" }}
-      #       # fallback to using the latest cache if no exact match is found
-      #       - v1-dependencies-
-      # - run: yarn install
-      # - save_cache:
-      #     paths:
-      #       - node_modules
-      #     key: v1-dependencies-{{ checksum "package.json" }}
-      # # run tests!
-      # - run: yarn test
