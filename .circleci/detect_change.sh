@@ -7,21 +7,17 @@
             if [[ ${LAST_SUCCESSFUL_COMMIT} == "null" ]]; then
               COMMITS="origin/master"
             else
-              # COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
+              COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
               # COMMITS="master..${LAST_SUCCESSFUL_COMMIT}"
-              COMMITS="origin/master"
+              # COMMITS="origin/master"
             fi
 
             echo -e "LAST_SUCCESSFUL_BUILD_URL $LAST_SUCCESSFUL_BUILD_URL"
             echo -e "LAST_SUCCESSFUL_COMMIT $LAST_SUCCESSFUL_COMMIT"
-            echo -e "Commits $COMMITS"
-
-            # DIFF=`git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u`
-
-            # echo -e "git diff file $DIFF"
-
-            # git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
-            git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
+            
+            git diff --name-only $(git merge-base --fork-point master) | cut -d/ -f1 | sort -u > projects
+            
+            # git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
             echo -e "Modified directories:\n`cat projects`\n"
            
             # If modified directories contain Gopkg/vendor directores, build all projects and exit
@@ -56,7 +52,7 @@
               if grep -Fxq $project project-dirs; then
                 printf "\nTriggerring build for project: "$project
                 curl -s -u ${CIRCLE_TOKEN}: \
-                  -d build_parameters[CIRCLE_JOB]=${project} \
+                  -d build_parameters[CIRCLE_JOB]=build_${project} \
                   --data revision=$CIRCLE_SHA1 \
                   https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
               fi
