@@ -1,5 +1,6 @@
-         
+            
             git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
+            echo git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u 
             echo -e "Modified directories:\n`cat projects`\n"
             # If modified directories contain Gopkg/vendor directores, build all projects and exit
             buildall=0
