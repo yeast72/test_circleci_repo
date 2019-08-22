@@ -2,53 +2,47 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2.1
+version: 2.0
 
 jobs:
-  build_app_1:
+  build:
     docker:
       - image: circleci/node:10.16.2
     steps:
       - checkout
       - run:
-          name: test app1
+          name: Determine which directories have changed
+          command: |
+            source .circleci/detect_change.sh
+            # source .circleci/trigger_job.sh
+            # git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u >  projects
+
+  app1:
+    docker:
+      - image: circleci/node:10.16.2
+    steps:
+      - checkout
+      - run:
+          name: build and test app1
           command: |
             cd app1 
             yarn 
             yarn test
-  build_app_2:
+  app2:
     docker:
       - image: circleci/node:10.16.2
     steps:
       - checkout
       - run:
-          name: test app2
+          name: build and test app2
           command: |
             cd app2
             yarn
             yarn test
 
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build_app_1
-      - build_app_2
-      # # Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "package.json" }}
-      #       # fallback to using the latest cache if no exact match is found
-      #       - v1-dependencies-# Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "package.json" }}
-      #       # fallback to using the latest cache if no exact match is found
-      #       - v1-dependencies-
-      # - run: yarn install
-      # - save_cache:
-      #     paths:
-      #       - node_modules
-      #     key: v1-dependencies-{{ checksum "package.json" }}
-      # # run tests!
-      # - run: yarn test
+# workflows:
+#   version: 2
+#   build_and_test:
+#     jobs:
+#       - app1
+#       - app2:
