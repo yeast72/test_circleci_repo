@@ -8,7 +8,8 @@
               COMMITS="origin/master"
             else
               # COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
-              COMMITS="master..${LAST_SUCCESSFUL_COMMIT}"
+              # COMMITS="master..${LAST_SUCCESSFUL_COMMIT}"
+              COMMITS="origin/master"
             fi
 
             echo -e "LAST_SUCCESSFUL_BUILD_URL $LAST_SUCCESSFUL_BUILD_URL"
@@ -19,8 +20,8 @@
 
             # echo -e "git diff file $DIFF"
 
-            git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
-            # git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
+            # git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
+            git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
             echo -e "Modified directories:\n`cat projects`\n"
            
             # If modified directories contain Gopkg/vendor directores, build all projects and exit
