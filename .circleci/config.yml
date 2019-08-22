@@ -15,13 +15,6 @@ jobs:
           command:
             source .circleci/a.sh
             # git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u >  projects
-            # printf "Modified directories:\n"
-            # cat projects
-          # while read project; do
-          #     if grep -Fxq $project projects.txt; then
-          #       printf "\nTriggerring build for dir: "$dir
-          #       curl -s -u ${CIRCLE_TOKEN}: \
-          #         -d build_parameters[CIRCLE_JOB]=${project} \                https://circleci.com/api/v1.1/project/github/$O/$R/tree/$CIRCLE_BRANCH
 
   app1:
     docker:
@@ -29,7 +22,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: test app1
+          name: build and test app1
           command: |
             cd app1 
             yarn 
@@ -40,7 +33,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: test app2
+          name: build and test app2
           command: |
             cd app2
             yarn
