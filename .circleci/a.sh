@@ -1,6 +1,20 @@
             
+            # Identify modified directories
+            LAST_SUCCESSFUL_BUILD_URL="https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?filter=completed&limit=1"
+            LAST_SUCCESSFUL_COMMIT=`curl -Ss -u "$CIRCLE_TOKEN:" $LAST_SUCCESSFUL_BUILD_URL | jq -r '.[0]["vcs_revision"]'`
+
+            #first commit in a branch
+            if [[ ${LAST_SUCCESSFUL_COMMIT} == "null" ]]; then
+              COMMITS="origin/master"
+            else
+              COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
+            fi
+
+            echo -e "LAST_SUCCESSFUL_BUILD_URL $LAST_SUCCESSFUL_BUILD_URL"
+            echo -e "LAST_SUCCESSFUL_COMMIT $LAST_SUCCESSFUL_COMMIT"
+            echo -e "Commits $COMMITS"
+
             git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
-            echo git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u 
             echo -e "Modified directories:\n`cat projects`\n"
             # If modified directories contain Gopkg/vendor directores, build all projects and exit
             buildall=0
