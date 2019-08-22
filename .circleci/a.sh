@@ -14,7 +14,8 @@
             echo -e "LAST_SUCCESSFUL_COMMIT $LAST_SUCCESSFUL_COMMIT"
             echo -e "Commits $COMMITS"
 
-            git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
+            # git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u > projects
+            git diff --name-only $COMMITS | cut -d/ -f1 | sort -u > projects
             echo -e "Modified directories:\n`cat projects`\n"
             # If modified directories contain Gopkg/vendor directores, build all projects and exit
             buildall=0
