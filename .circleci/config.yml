@@ -14,7 +14,7 @@ jobs:
           name: Determine which directories have changed
           command: |
             source .circleci/detect_change.sh
-            source .circleci/trigger_job.sh
+            # source .circleci/trigger_job.sh
             # git diff --no-commit-id --name-only master | cut -d/ -f1 | sort -u >  projects
 
   app1:
