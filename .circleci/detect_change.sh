@@ -7,7 +7,8 @@
             if [[ ${LAST_SUCCESSFUL_COMMIT} == "null" ]]; then
               COMMITS="origin/master"
             else
-              COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
+              # COMMITS="${CIRCLE_SHA1}..${LAST_SUCCESSFUL_COMMIT}"
+              COMMITS="master..${LAST_SUCCESSFUL_COMMIT}"
             fi
 
             echo -e "LAST_SUCCESSFUL_BUILD_URL $LAST_SUCCESSFUL_BUILD_URL"

@@ -1,3 +1,18 @@
+#  If modified directories contain Gopkg/vendor directores, build all projects and exit
+buildall=0
+for project in `cat projects`; do
+  if [[ ${project} =~ "Gopkg" || ${project} =~ "vendor" ]]; then
+    buildall=1
+    echo -e "Dependencies change detected. building all $CIRCLE_PROJECT_REPONAME"
+    curl -s -u ${CIRCLE_TOKEN}: \
+      -d build_parameters[CIRCLE_JOB]=all \
+      https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+    fi
+  if [[ ${buildall} -eq 1 ]]; then
+    exit 0
+  fi
+done
+
 projects_inc_dep=(`cat projects`)
 echo -e "Calculating dependencies\n"
 for dir in `ls -d */`; do
